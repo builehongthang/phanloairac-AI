@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>AI Recycling - Green Planet</title>
+    <style>
+        :root { 
+            --organic: #795548; --plastic: #2196f3; --paper: #ffb300; 
+            --success: #2e7d32; --danger: #d32f2f;
+            --main-green: #2e7d32; --hover-green: #1b5e20; --bg-color: #f1f8e9;
+            --sky-blue: #87CEEB; --grass-green: #a5d6a7;
+        }
+
+        /* --- HIỆU ỨNG MỚI CHO THÙNG RÁC --- */
+        .bin.correct-flash::after {
+            animation: flashSuccess 0.5s ease-out;
+            box-shadow: 0 0 30px 10px rgba(255, 255, 255, 0.8);
+            filter: brightness(1.5);
+        }
+
+        .bin.wrong-shake {
+            animation: shakeBin 0.4s cubic-bezier(.36,.07,.19,.97) both;
+        }
+
+        @keyframes flashSuccess {
+            0% { filter: brightness(1); transform: scale(1); }
+            50% { filter: brightness(1.8); transform: scale(1.05); }
+            100% { filter: brightness(1); transform: scale(1); }
+        }
+
+        @keyframes shakeBin {
+            10%, 90% { transform: translate3d(-1px, 0, 0); }
+            20%, 80% { transform: translate3d(2px, 0, 0); }
+            30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+            40%, 60% { transform: translate3d(4px, 0, 0); }
+        }
+        /* ---------------------------------- */
+
+        #intro-screen { 
+            background-image: 
+		linear-gradient(rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.6)),
+		url('hinhnen6.jpg'); 
+    	    background-size: cover; 
+            background-repeat: no-repeat;
+            background-position: center;
+        }
+
+        #intro-screen h2 {
+            font-size: 1.8rem;
+    	    padding: 15px 25px;
+            backdrop-filter: blur(5px);           /* Làm nhòe phần ảnh phía sau chữ */
+            border-radius: 15px;
+            color: #1b5e20;
+            z-index: 2;
+        }
+        * { box-sizing: border-box; }
+        body { 
+            font-family: 'Segoe UI', Arial, sans-serif; 
+            background: url('hinhnenngoai.jpg')no-repeat center center fixed;
+            background-size: cover;
+            margin: 0; display: flex; justify-content: center; align-items: center; height: 100vh; 
+            height: -webkit-fill-available;
+            user-select: none; overflow: hidden;
+        }
+
+        .leaf {
+            position: absolute; top: -50px; pointer-events: none; z-index: 1;
+            animation: fall linear infinite;
+        }
+        @keyframes fall {
+            to { transform: translateY(105vh) rotate(360deg); }
+        }
+
+        @media (max-width: 600px) {
+            #game-container {
+                width: 98vw !important;
+                height: 95vh !important;
+                aspect-ratio: auto !important;
+                max-height: none !important;
+            }
+            .bin {
+                width: 85px !important;
+                height: 110px !important;
+            }
+            .bin span { font-size: 14px !important; }
+            .item {
+                width: 65px !important;
+                height: 65px !important;
+                font-size: 45px !important;
+            }
+            #menu h1 { font-size: 2.8rem !important; }
+            .header { font-size: 0.9rem !important; height: 50px !important; }
+            #ai-log { max-width: 150px !important; font-size: 0.7rem !important; }
+        }
+
+        .cloud {
+            position: absolute; font-size: 4rem; opacity: 0.7; z-index: 1;
+            pointer-events: none; animation: cloudMove linear infinite;
+        }
+        @keyframes cloudMove { 
+            from { transform: translateX(-200px); }
+            to { transform: translateX(calc(100vw + 200px)); }
+        }
+
+        
+
+        #game-container { 
+            width: 95vw; max-width: 1000px; aspect-ratio: 1000 / 750; max-height: 90vh;
+            background: rgba(255, 255, 255, 0.92); border-radius: 20px; 
+            box-shadow: 0 25px 50px rgba(0,0,0,0.15); 
+            position: relative; overflow: visible; border: 5px solid #ffffff; z-index: 10;
+            backdrop-filter: blur(5px); display: flex; flex-direction: column;
+        }
+
+        .screen { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 2%; text-align: center; transition: 0.5s; }
+        
+        #menu { 
+            background: 
+	    linear-gradient(rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.6)),
+	    url('hinhnen4.jpg') no-repeat center center;
+            background-size: cover;
+            animation: fadeIn 0.8s ease-in-out;
+        }
+        #menu h1 { 
+            font-size: clamp(2rem, 5vw, 4.2rem); color: #1b5e20; margin: 0; font-weight: 900; 
+            text-shadow: 2px 2px 0px white, 4px 4px 0px rgba(0,0,0,0.1);
+        }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+
+        .hidden { display: none !important; }
+
+        .header { 
+            width: 100%; height: 60px; background: #2e7d32; color: white; 
+            display: flex; justify-content: space-around; align-items: center; 
+            font-weight: bold; font-size: 1.1rem; flex-shrink: 0; z-index: 500;
+        }
+
+        .bins-container { 
+            display: flex; justify-content: space-around; width: 100%; padding: 25px 0; 
+            background: rgba(227, 242, 253, 0.6); border-bottom: 5px solid #a5d6a7; position: relative; z-index: 400; 
+        }
+        .bin { 
+            width: 115px; height: 135px; position: relative;
+            display: flex; flex-direction: column; align-items: center; 
+            justify-content: center; transition: 0.2s; cursor: pointer;
+        }
+        .bin::before {
+            content: ""; position: absolute; top: 0; width: 110%; height: 18px;
+            border-radius: 5px 5px 2px 2px; box-shadow: 0 2px 5px rgba(0,0,0,0.2); z-index: 2;
+        }
+        .bin::after {
+            content: ""; position: absolute; bottom: 0; width: 100%; height: 85%;
+            border-radius: 0 0 15px 15px; z-index: 1;
+            clip-path: polygon(0 0, 100% 0, 90% 100%, 10% 100%);
+            transition: 0.3s;
+        }
+        .bin.organic::before, .bin.organic::after { background: var(--organic); }
+        .bin.plastic::before, .bin.plastic::after { background: var(--plastic); }
+        .bin.paper::before, .bin.paper::after { background: var(--paper); }
+        
+        .bin span { 
+            position: relative; z-index: 3; text-align: center; pointer-events: none;
+            font-size: 18px; font-weight: 900; line-height: 1.1; color: white;
+            text-shadow: 1px 2px 4px rgba(0,0,0,0.6); margin-top: 15px;
+        }
+
+        .play-zones { 
+            display: flex; width: 100%; flex: 1; 
+            background: 
+            linear-gradient(rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.6)),
+            url('hinhnen1.jpg') no-repeat center center;
+            background-size: cover;
+            position: relative; overflow: hidden; z-index: 100;
+        }
+
+        .zone { flex: 1; position: relative; border: 1px solid rgba(255,255,255,0.2); z-index: 3; }
+        #player-zone { border-right: 4px dashed rgba(0,0,0,0.1); }
+
+        .zone-info { 
+            padding: 10px; background: rgba(255,255,255,0.8); font-weight: bold; 
+            font-size: 0.9rem; display: flex; justify-content: space-between;
+        }
+        
+        .item { 
+            width: 80px; height: 80px; cursor: grab; position: absolute; 
+            font-size: 55px; display: flex; align-items: center; justify-content: center; 
+            z-index: 999 !important; touch-action: none;
+            filter: drop-shadow(0 5px 10px rgba(0,0,0,0.3)); pointer-events: auto;
+        }
+        .item:active { cursor: grabbing; transform: scale(1.2); }
+
+        #result-screen { 
+        background: 
+        linear-gradient(rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.6)),
+        url('hinhnen1.jpg') no-repeat center center !important; 
+        background-size: cover !important;
+        z-index: 5000; 
+        }
+        .result-box {
+            background:white; padding: 40px; border-radius: 30px; 
+            border: 6px solid #2e7d32; box-shadow: 0 20px 60px rgba(0,0,0,0.5); 
+            width: 85%; max-width: 500px;
+            animation: resultPop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        @keyframes resultPop { from { transform: scale(0.5); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+        #ai-log { 
+            position: absolute; bottom: 10px; right: 10px; width: 85%; max-width: 220px;
+            background: #263238; color: #64ffda; padding: 10px; 
+            font-family: 'Courier New', monospace; font-size: 0.8rem; 
+            border-radius: 10px; border-left: 4px solid #64ffda;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3); z-index: 100; pointer-events: none;
+        }
+
+        .btn-lvl { 
+            padding: 15px 30px; margin: 5px; font-size: 1.1rem; cursor: pointer; border: none; 
+            border-radius: 50px; background: var(--main-green); color: white; font-weight: bold; 
+            box-shadow: 0 4px 0 #1b5e20; transition: 0.2s;
+        }
+        .btn-lvl:hover { transform: translateY(-3px); box-shadow: 0 6px 0 #1b5e20; }
+
+        #countdown-overlay { 
+            position: absolute; inset: 0; background: rgba(27, 94, 32, 0.9); 
+            color: white; display: none; justify-content: center; align-items: center; 
+            font-size: 8rem; font-weight: 900; z-index: 2000;
+        }
+        
+        #fw-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 6000; }
+        .shake-err { animation: shake 0.4s; background-color: rgba(255, 0, 0, 0.2) !important; }
+        @keyframes shake { 0%,100%{transform:translateX(0)} 20%{transform:translateX(-5px)} 40%{transform:translateX(5px)} 60%{transform:translateX(-5px)} 80%{transform:translateX(5px)} }
+        @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-20px); } }
+    </style>
+</head>
+<body>
+
+<div id="leaf-container" style="position: absolute; width: 100%; height: 100%; overflow: hidden; pointer-events: none; z-index: 1;"></div>
+
+<div class="cloud" style="top: 5%; animation-duration: 40s; animation-delay: -5s;">☁️</div>
+<div class="cloud" style="top: 15%; animation-duration: 35s; animation-delay: -15s; font-size: 3rem; opacity: 0.5;">☁️</div>
+<div class="cloud" style="top: 10%; animation-duration: 50s; animation-delay: -2s; font-size: 5rem;">☁️</div>
+
+
+<canvas id="fw-canvas"></canvas>
+
+<div id="game-container">
+    <div id="countdown-overlay">3</div>
+
+    <div id="intro-screen" class="screen">
+        <div style="font-size: 80px; margin-bottom: 10px;"></div>
+        <h2 style="color: #1b5e20; margin-bottom: 10px;">EM CÓ BIẾT CÁCH PHÂN LOẠI RÁC KHÔNG?</h2>
+        <p style="font-size: 1.1rem; color: #2e7d32; max-width: 80%; line-height: 1.5; font-weight: bold;">
+            Rác thải nhựa mất hàng trăm năm để phân hủy. <br>
+            Hãy cùng bảo vệ môi trường ngay hôm nay!
+        </p>
+        <p style="font-size: 1.2rem; margin: 15px 0; color: #2e7d32;">🔥 Hãy cùng thi đua phân loại rác với AI 🔥</p>
+        <button class="btn-lvl" onclick="showMenu()">BẮT ĐẦU NGAY</button>
+    </div>
+
+    <div id="menu" class="screen hidden">
+        <div style="font-size: 100px; margin-bottom: 15px; animation: bounce 2s infinite;">🌱</div> 
+        <h1>HÀNH TINH<br><span style="color:#2e7d32; font-weight:900">XANH</span></h1>
+        <p style="font-size: 1.1rem; color: #333; margin-bottom: 25px; font-weight: 500;">✨ Phân loại rác thông minh cùng Robot ✨</p>
+        <div>
+            <button class="btn-lvl" onclick="startCountdown('easy')">🎮 DỄ</button>
+            <button class="btn-lvl" onclick="startCountdown('medium')">🚀 TRUNG BÌNH</button>
+            <button class="btn-lvl" onclick="startCountdown('hard')">💎 KHÓ</button>
+        </div>
+    </div>
+
+    <div id="play-screen" class="screen hidden" style="padding: 0; justify-content: flex-start;">
+        <div class="header">
+            <div>⏱️ <span id="timer">45</span>s</div>
+            <div id="level-title">CẤP ĐỘ: ---</div>
+            <div>📦 <span id="items-left">0</span></div>
+        </div>
+        <div class="bins-container">
+            <div class="bin organic" data-type="organic"><span>🍂<br>HỮU CƠ</span></div>
+            <div class="bin plastic" data-type="plastic"><span>🥤<br>NHỰA</span></div>
+            <div class="bin paper" data-type="paper"><span>📄<br>GIẤY</span></div>
+        </div>
+        <div class="play-zones">
+            <div id="player-zone" class="zone">
+                <div class="zone-info">
+                    <span>👤 BẠN</span>
+                    <span style="color:var(--main-green)">Đúng <span id="p-score">0</span> Sai <span id="p-wrong">0</span></span>
+                </div>
+            </div>
+            <div id="ai-zone" class="zone">
+                <div class="zone-info">
+                    <span>🤖 AI</span>
+                    <span style="color:var(--plastic)">Đúng <span id="ai-score">0</span> Sai <span id="ai-wrong">0</span></span>
+                </div>
+                <div id="ai-log">> ĐANG CHỜ...</div>
+            </div>
+        </div>
+    </div>
+
+    <div id="result-screen" class="screen hidden">
+        <div class="result-box">
+            <div id="result-icon" style="font-size: 60px; margin-bottom: 10px;">📊</div>
+            <h2 id="winner-msg" style="font-size: 2.5rem; margin: 0 0 15px 0;">KẾT QUẢ</h2>
+            <div id="final-stats" style="font-size: 1.3rem; line-height: 1.6; margin-bottom: 25px; color: #333;"></div>
+            <button onclick="location.reload()" class="btn-lvl" style="width:100%">🔄 CHƠI LẠI</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    
+    function showMenu() {
+        document.getElementById('intro-screen').classList.add('hidden');
+        document.getElementById('menu').classList.remove('hidden');
+    }    
+
+    function createLeaves() {
+        const container = document.getElementById('leaf-container');
+        const leafEmojis = ['🌸', '🍀', '🍃', '🌼', '🍁'];
+        for (let i = 0; i < 30; i++) {
+            let leaf = document.createElement('div');
+            leaf.className = 'leaf';
+            leaf.innerText = leafEmojis[Math.floor(Math.random() * leafEmojis.length)];
+            leaf.style.left = Math.random() * 100 + 'vw';
+            leaf.style.fontSize = (Math.random() * 20 + 20) + 'px';
+            leaf.style.animationDuration = (Math.random() * 5 + 5) + 's';
+            leaf.style.animationDelay = Math.random() * 5 + 's';
+            leaf.style.opacity = Math.random();
+            container.appendChild(leaf);
+        }
+    }
+    createLeaves();
+
+    const fullKB = [
+        {x: 90, y: 10, t: 'organic'},{x: 85, y: 15, t: 'organic'} ,{x: 95, y: 5, t: 'organic'} ,
+        {x: 40, y: 45, t: 'plastic'}, {x: 65, y: 35, t: 'organic'},
+        {x: 10, y: 30, t: 'plastic'}, {x: 15, y: 35, t: 'plastic'},{x: 5, y: 25, t: 'plastic'} ,
+        {x: 50, y: 70, t: 'paper'}, {x: 55, y: 75, t: 'paper'},{x: 45, y: 65, t: 'paper'} 
+    ];
+
+    const itemPool = [
+        { e: '🍎', x: 92, y: 8,  t: 'organic' }, { e: '🥤', x: 8,  y: 32, t: 'plastic' }, { e: '📦', x: 48, y: 72, t: 'paper' },
+        { e: '🍌', x: 85, y: 15, t: 'organic' }, { e: '🥫', x: 15, y: 45, t: 'plastic' }, { e: '📰', x: 55, y: 65, t: 'paper' },
+        { e: '🥦', x: 88, y: 12, t: 'organic' }, { e: '🧴', x: 12, y: 38, t: 'plastic' }, { e: '📜', x: 40, y: 80, t: 'paper' }
+    ];
+
+    const vnNames = { organic: "HỮU CƠ", plastic: "NHỰA", paper: "GIẤY" };
+    const config = { 
+        easy:   { total: 10, k: 1, mem: 3,  speed: 1900, think: 1500 }, 
+        medium: { total: 15, k: 2, mem: 6,  speed: 1500, think: 1200  }, 
+        hard:   { total: 20, k: 3, mem: 11, speed: 1000,  think: 900   } 
+    };
+    
+    let pScore = 0, pWrong = 0, aiScore = 0, aiWrong = 0, pCount = 0, aiCount = 0, gameActive = false, diff = 'easy';
+
+    // CẬP NHẬT: Thêm tham số source để chỉ bật hiệu ứng cho người chơi
+    function triggerBinEffect(type, isCorrect, source) {
+        if (source !== 'player') return; // Nếu không phải người chơi, thoát hàm ngay
+
+        const bin = document.querySelector(`.bin.${type}`);
+        if (!bin) return;
+        
+        if (isCorrect) {
+            bin.classList.add('correct-flash');
+            setTimeout(() => bin.classList.remove('correct-flash'), 500);
+        } else {
+            bin.classList.add('wrong-shake');
+            setTimeout(() => bin.classList.remove('wrong-shake'), 400);
+        }
+    }    
+
+    function startCountdown(d) {
+        diff = d;
+        document.getElementById('menu').classList.add('hidden');
+        const ov = document.getElementById('countdown-overlay');
+        ov.style.display = 'flex';
+        let c = 3;
+        let t = setInterval(() => {
+            if(c > 0) ov.innerText = c;
+            else if(c === 0) ov.innerText = "SẴN SÀNG!";
+            else { clearInterval(t); ov.style.display = 'none'; initGame(); }
+            c--;
+        }, 800);
+    }
+
+    function initGame() {
+        document.getElementById('play-screen').classList.remove('hidden');
+        let vnDiff = diff === 'easy' ? "DỄ" : (diff === 'medium' ? "TRUNG BÌNH" : "KHÓ");
+        document.getElementById('level-title').innerText = "CẤP ĐỘ: " + vnDiff;
+        document.getElementById('items-left').innerText = config[diff].total;
+        gameActive = true;
+        spawn('player'); spawn('ai');
+        let timer = 45;
+        let clk = setInterval(() => {
+            if(!gameActive) { clearInterval(clk); return; }
+            timer--; document.getElementById('timer').innerText = timer;
+            if(timer <= 0) endGame();
+        }, 1000);
+    }
+
+    function spawn(side) {
+        if(!gameActive) return;
+        const currentCount = side === 'player' ? pCount : aiCount;
+        if(currentCount >= config[diff].total) return;
+        const data = {...itemPool[Math.floor(Math.random()*itemPool.length)]};
+        const div = document.createElement('div');
+        div.className = 'item'; div.innerText = data.e;
+        const zone = document.getElementById(side + '-zone');
+        div.style.top = "40%"; div.style.left = "calc(50% - 40px)";
+        zone.appendChild(div);
+        if(side === 'player') { pCount++; makeDraggable(div, data); }
+        else { aiCount++; runAiKNN(div, data); }
+    }
+
+    function runAiKNN(el, data) {
+        const s = config[diff];
+        const logEl = document.getElementById('ai-log');
+        let thinkingInterval = setInterval(() => { logEl.innerText = "> PHÂN LOẠI RÁC..."; }, 250);
+        setTimeout(() => {
+            clearInterval(thinkingInterval);
+            if(!gameActive) return;
+            const currentMemory = fullKB.slice(0, s.mem);
+            let distances = currentMemory.map(p => ({
+                type: p.t, dist: Math.sqrt(Math.pow(data.x - p.x, 2) + Math.pow(data.y - p.y, 2))
+            }));
+            distances.sort((a, b) => a.dist - b.dist);
+            const prediction = distances[0].type;
+            logEl.innerText = "> KẾT QUẢ: " + vnNames[prediction];
+            const binEl = document.querySelector(`.bin.${prediction}`);
+            const binRect = binEl.getBoundingClientRect();
+            const containerRect = document.getElementById('game-container').getBoundingClientRect();
+            const itemRect = el.getBoundingClientRect();
+            document.getElementById('game-container').appendChild(el);
+            el.style.left = (itemRect.left - containerRect.left) + "px";
+            el.style.top = (itemRect.top - containerRect.top) + "px";
+            
+            setTimeout(() => {
+                if(!gameActive) return;
+                el.style.transition = `all ${s.speed/1000}s cubic-bezier(0.4, 0, 0.2, 1)`;
+                el.style.left = (binRect.left + binRect.width/2 - containerRect.left - 40) + "px";
+                el.style.top = (binRect.top + binRect.height/2 - containerRect.top - 40) + "px";
+            }, 50);
+            
+            setTimeout(() => {
+                if(!gameActive) { el.remove(); return; }
+                const isCorrect = prediction === data.t;
+                if(isCorrect) aiScore++; else aiWrong++;
+                
+                // CẬP NHẬT: Gửi kèm 'ai' để hàm bỏ qua hiệu ứng
+                triggerBinEffect(prediction, isCorrect, 'ai');
+                if(!isCorrect) triggerShake('ai-zone');
+
+                document.getElementById('ai-score').innerText = aiScore;
+                document.getElementById('ai-wrong').innerText = aiWrong;
+                el.remove();
+                spawn('ai'); checkEnd();
+            }, s.speed);
+        }, s.think);
+    }
+
+    function makeDraggable(el, data) {
+        const move = (e) => {
+            if(!gameActive) return;
+            let x = e.type.includes('touch') ? e.touches[0].clientX : e.clientX;
+            let y = e.type.includes('touch') ? e.touches[0].clientY : e.clientY;
+            const containerRect = document.getElementById('game-container').getBoundingClientRect();
+            el.style.left = (x - containerRect.left - el.ox) + "px"; el.style.top = (y - containerRect.top - el.oy) + "px";
+        };
+        const stop = () => {
+            document.removeEventListener('mousemove', move); document.removeEventListener('mouseup', stop);
+            document.removeEventListener('touchmove', move); document.removeEventListener('touchend', stop);
+            if(!gameActive) { el.remove(); return; }
+            
+            const r = el.getBoundingClientRect(); let hitBinType = null;
+            document.querySelectorAll('.bin').forEach(b => {
+                const br = b.getBoundingClientRect();
+                if(r.left < br.right && r.right > br.left && r.top < br.bottom && r.bottom > br.top) hitBinType = b.dataset.type;
+            });
+
+            if (hitBinType) {
+                const isCorrect = hitBinType === data.t;
+                if(isCorrect) pScore++; else pWrong++;
+                
+                // CẬP NHẬT: Gửi kèm 'player' để bật hiệu ứng
+                triggerBinEffect(hitBinType, isCorrect, 'player');
+                if(!isCorrect) triggerShake('player-zone');
+
+                el.remove(); 
+                document.getElementById('p-score').innerText = pScore;
+                document.getElementById('p-wrong').innerText = pWrong;
+                document.getElementById('items-left').innerText = config[diff].total - pCount;
+                spawn('player'); checkEnd();
+            } else { el.style.transition = "all 0.4s ease"; el.style.left = "calc(50% - 40px)"; el.style.top = "40%"; }
+        };
+        const start = (e) => {
+            if(!gameActive) return;
+            let x = e.type.includes('touch') ? e.touches[0].clientX : e.clientX;
+            let y = e.type.includes('touch') ? e.touches[0].clientY : e.clientY;
+            const rect = el.getBoundingClientRect();
+            const containerRect = document.getElementById('game-container').getBoundingClientRect();
+            el.ox = x - rect.left; el.oy = y - rect.top;
+            document.getElementById('game-container').appendChild(el);
+            el.style.left = (rect.left - containerRect.left) + "px"; el.style.top = (rect.top - containerRect.top) + "px";
+            el.style.transition = "none";
+            document.addEventListener('mousemove', move); document.addEventListener('mouseup', stop);
+            document.addEventListener('touchmove', move, {passive: false}); document.addEventListener('touchend', stop);
+        };
+        el.addEventListener('mousedown', start); el.addEventListener('touchstart', start, {passive: false});
+    }
+
+    function triggerShake(id) { const z = document.getElementById(id); z.classList.add('shake-err'); setTimeout(() => z.classList.remove('shake-err'), 400); }
+    function checkEnd() { if(pCount >= config[diff].total && aiCount >= config[diff].total && !document.querySelector('.item')) setTimeout(endGame, 800); }
+    
+    function endGame() {
+        gameActive = false; 
+        document.querySelectorAll('.item').forEach(item => item.remove());
+        document.getElementById('play-screen').classList.add('hidden');
+        document.getElementById('result-screen').classList.remove('hidden');
+        document.getElementById('final-stats').innerHTML = `👤 <b>BẠN:</b> Đúng ${pScore} - Sai ${pWrong}<br>🤖 <b>AI:</b> Đúng ${aiScore} - Sai ${aiWrong}`;
+        
+        const msg = document.getElementById('winner-msg');
+        const icon = document.getElementById('result-icon');
+
+        if(pScore > aiScore) {
+            msg.innerText = "🏆 TUYỆT VỜI!";
+            icon.innerText = "⭐";
+            startFireworks();
+        } else if (pScore === aiScore) {
+            msg.innerText = "🤝 BẮT TAY HÒA NHA!";
+            icon.innerText = "✨";
+        } else {
+            msg.innerText = "🤖 THẮNG. CỐ GẮNG LÊN!";
+            icon.innerText = "🦾";
+        }
+    }
+
+    const canvas = document.getElementById('fw-canvas'); const ctx = canvas.getContext('2d'); let pts = [];
+    function startFireworks() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; loop(); setInterval(() => explode(Math.random()*canvas.width, Math.random()*canvas.height/2), 600); }
+    function explode(x,y) { const c = `hsl(${Math.random()*360},100%,50%)`; for(let i=0; i<30; i++) pts.push({x,y,vx:(Math.random()-0.5)*15,vy:(Math.random()-0.5)*15,l:1,c}); }
+    function loop() { ctx.clearRect(0,0,canvas.width,canvas.height); pts.forEach((p,i) => { p.x+=p.vx; p.y+=p.vy; p.vy+=0.15; p.l-=0.02; ctx.fillStyle=p.c; ctx.globalAlpha=p.l; ctx.beginPath(); ctx.arc(p.x,p.y,3,0,Math.PI*2); ctx.fill(); if(p.l<=0) pts.splice(i,1); }); requestAnimationFrame(loop); }
+</script>
+</body>
+</html>
