@@ -48,7 +48,22 @@
             flex-direction: column;
             overflow: hidden;
             background: rgba(255, 255, 255, 0.95); 
+            /* Chặn bôi đen chữ và hình ảnh */
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+
+    /* Chặn hành động kéo ảnh mặc định của trình duyệt */
+    -webkit-user-drag: none;
+    user-drag: none;
+    
+    /* Ngăn chặn menu chuột phải trên điện thoại/tablet khi nhấn giữ */
+    -webkit-touch-callout: none;
         }
+        * {
+    -webkit-tap-highlight-color: transparent;
+}
 
         /* --- HIỆU ỨNG --- */
         .bin.correct-flash::after {
@@ -471,7 +486,7 @@
 
     <div id="play-screen" class="screen hidden" style="padding: 0; justify-content: flex-start;">
         <div class="header">
-            <div>⏰ <span id="timer">45</span>s</div>
+            <div>⏰ <span id="timer">20</span>s</div>
             <div id="level-title">---</div>
             <div>🎒 Còn: <span id="items-left">0</span></div>
         </div>
@@ -497,17 +512,86 @@
         </div>
     </div>
 
-    <div id="result-screen" class="screen hidden">
-        <div class="result-box">
-            <div id="result-icon" style="font-size: 70px; margin-bottom: 10px;">🌟</div>
-            <h2 id="winner-msg" style="font-size: 2rem; color: #2E7D32; margin-bottom: 15px;">KẾT QUẢ</h2>
-            <div id="final-stats" style="font-size: 1.2rem; line-height: 1.6; margin-bottom: 20px; background: #F1F8E9; padding: 15px; border-radius: 20px;"></div>
-            <button onclick="location.reload()" class="btn-lvl" style="width:100%; font-size: 1.3rem;">🔄 THỬ LẠI NÈ</button>
-        </div>
+    <div id="result-screen" class="screen hidden" style="
+    position: fixed; 
+    top: 0; left: 0; width: 100%; height: 100%; 
+    background: url(./hinhnen1.jpg); 
+    background-size: cover;
+    backdrop-filter: blur(8px); 
+    display: flex; justify-content: center; align-items: center;">
+    
+    <div class="result-box" style="
+        background: #ffffff; 
+        border: 4px solid #4CAF50; 
+        border-radius: 40px; 
+        padding: 30px; 
+        width: 90%; 
+        max-width: 400px; 
+        text-align: center; 
+        box-shadow: 0 15px 0px rgba(76, 175, 80, 0.2), 0 20px 40px rgba(0,0,0,0.1);
+        font-family: 'Itim', cursive;">
+        
+        <div id="result-icon" style="font-size: 80px; margin-bottom: 10px; filter: drop-shadow(0 5px 10px rgba(0,0,0,0.1));">🌟</div>
+        
+        <h2 id="winner-msg" style="
+            font-size: 2.2rem; 
+            color: #2E7D32; 
+            margin: 0 0 15px 0; 
+            text-transform: uppercase; 
+            text-shadow: 2px 2px 0px rgba(0,0,0,0.05);">KẾT QUẢ</h2>
+        
+        <div id="final-stats" style="
+            font-size: 1.3rem; 
+            line-height: 1.8; 
+            margin-bottom: 25px; 
+            background: #F1F8E9; 
+            padding: 20px; 
+            border-radius: 25px; 
+            border: 2px dashed #A5D6A7;
+            color: #1B5E20;"
+            z-index: 10;>
+            </div>
+        
+        <button onclick="resetGame()" class="btn-lvl" style="
+            width: 100%; 
+            font-size: 1.4rem; 
+            background: #2196F3; 
+            color: white; 
+            border: none; 
+            padding: 15px; 
+            border-radius: 50px; 
+            box-shadow: 0 6px 0px #1976D2; 
+            cursor: pointer;
+            display: flex; align-items: center; justify-content: center; gap: 10px;">
+            🔄 THỬ LẠI NÈ
+        </button>
     </div>
+</div>
 </div>
 
 <script>
+
+    function resetGame() {
+    // 1. Ẩn màn hình kết quả
+    document.getElementById('result-screen').classList.add('hidden');
+
+    // 2. Reset các biến số điểm (Thay tên biến cho đúng với code của bạn)
+    userRight = 0;
+    userWrong = 0;
+    aiRight = 0;
+    aiWrong = 0;
+    currentTime = 60; // Hoặc thời gian mặc định của bạn
+
+    // 3. Cập nhật lại hiển thị điểm trên giao diện
+    updateScoreUI(); 
+
+    // 4. Xóa các rác cũ đang bay trên màn hình (nếu có)
+    const oldTrash = document.querySelectorAll('.trash-item');
+    oldTrash.forEach(item => item.remove());
+
+    // 5. Chạy lại hàm bắt đầu game hoặc hàm tạo rác
+    startNewRound(); 
+}
     /* KHỞI TẠO LÁ BAY */
     function createLeaves() {
         const container = document.getElementById('leaf-container');
@@ -539,17 +623,26 @@ const fullKB = [
 
 const itemPool = [
     // Hữu cơ
-    { e: '🍎', x: 92, y: 8,  t: 'organic' }, 
-    { e: '🍌', x: 85, y: 15, t: 'organic' }, 
+    { e: '🍏', x: 92, y: 8,  t: 'organic' }, 
+    { e: '🍉', x: 85, y: 15, t: 'organic' }, 
     { e: '🥦', x: 88, y: 12, t: 'organic' },
+    { e: '🥝', x: 88, y: 12, t: 'organic' },
+    { e: '🍔', x: 88, y: 12, t: 'organic' },
+    { e: '🥑', x: 88, y: 12, t: 'organic' },
+    { e: '🥕', x: 88, y: 12, t: 'organic' },
     // Vô cơ
     { e: '🚬', x: 8,  y: 32, t: 'inorganic' }, // Đầu lọc thuốc lá
     { e: '🐚', x: 15, y: 45, t: 'inorganic' }, // Vỏ sò/ốc
-    { e: '🛍️', x: 12, y: 38, t: 'inorganic' }, // Túi nilon bẩn
+    { e: '💡', x: 12, y: 38, t: 'inorganic' }, // Túi nilon bẩn
+    { e: '🍸', x: 12, y: 38, t: 'inorganic' },
+    { e: '🍾', x: 12, y: 38, t: 'inorganic' },
+
     // Tái chế
     { e: '🥤', x: 48, y: 72, t: 'recycle' }, // Ly nhựa sạch
     { e: '📰', x: 55, y: 65, t: 'recycle' }, // Báo cũ
-    { e: '🥫', x: 40, y: 80, t: 'recycle' }  // Lon nhôm
+    { e: '📒', x: 40, y: 80, t: 'recycle' }, 
+    { e: '🥫', x: 40, y: 80, t: 'recycle' },
+    { e: '📦️', x: 40, y: 80, t: 'recycle' }
 ];
 
 const vnNames = { 
@@ -558,9 +651,9 @@ const vnNames = {
     recycle: "TÁI CHẾ" 
 };
     const config = { 
-        easy:   { total: 10, k: 1, mem: 3,  speed: 1900, think: 1500 }, 
-        medium: { total: 15, k: 2, mem: 6,  speed: 1500, think: 1200  }, 
-        hard:   { total: 20, k: 3, mem: 11, speed: 1000,  think: 900   } 
+        easy:   { total: 5, k: 1, mem: 3,  speed: 1900, think: 1500 }, 
+        medium: { total: 10, k: 2, mem: 6,  speed: 1500, think: 1200  }, 
+        hard:   { total: 15, k: 3, mem: 8, speed: 1000,  think: 900   } 
     };
     
     let pScore = 0, pWrong = 0, aiScore = 0, aiWrong = 0, pCount = 0, aiCount = 0, gameActive = false, diff = 'easy';
@@ -599,7 +692,7 @@ const vnNames = {
         document.getElementById('items-left').innerText = config[diff].total;
         gameActive = true;
         spawn('player'); spawn('ai');
-        let timer = 45;
+        let timer = 20;
         let clk = setInterval(() => {
             if(!gameActive) { clearInterval(clk); return; }
             timer--; document.getElementById('timer').innerText = timer;
@@ -724,7 +817,7 @@ const vnNames = {
         const msg = document.getElementById('winner-msg');
         const icon = document.getElementById('result-icon');
         if(pScore > aiScore) {
-            msg.innerText = "🏆 EM GIỎI QUÁ!";
+            msg.innerText = "🏆 BẠN GIỎI QUÁ!";
             icon.innerText = "⭐";
             startFireworks();
         } else if (pScore === aiScore) {
