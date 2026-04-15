@@ -459,9 +459,46 @@
     /* Mẹo: Chỉnh nhẹ để chữ không bị lệch xuống do Flexbody */
     line-height: 1;
 }
+
+#quick-reset-btn {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 10px;
+    height: 10px;
+    background: white;
+    border: 3px solid #4CAF50;
+    border-radius: 50%;
+    font-size: 1.5rem;
+    cursor: pointer;
+    z-index: 5000; /* Nằm dưới màn hình kết quả nhưng trên vùng chơi */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    transition: all 0.2s ease;
+}
+
+#quick-reset-btn:hover {
+    transform: rotate(180deg) scale(1.1);
+    background: #F1F8E9;
+}
+
+#quick-reset-btn:active {
+    transform: scale(0.9);
+}
+
+/* Ẩn nút khi đang ở màn hình chờ hoặc màn hình kết quả để tránh bị đè */
+#intro-screen:not(.hidden) ~ #quick-reset-btn,
+#result-screen:not(.hidden) ~ #quick-reset-btn {
+    display: none;
+}
     </style>
 </head>
 <body>
+    <button id="quick-reset-btn" onclick="resetGame()" title="Chơi lại từ đầu">
+    🔄
+</button>
 <div class="company-logo">
     <img src="./logo.png" alt="Company Logo">
 </div>
@@ -567,30 +604,40 @@
         </button>
     </div>
 </div>
+
 </div>
 
 <script>
 
     function resetGame() {
-    // 1. Ẩn màn hình kết quả
+    // 1. Dừng mọi trạng thái game đang chạy
+    gameActive = false;
+
+    // 2. Ẩn màn hình kết quả và màn hình chơi
     document.getElementById('result-screen').classList.add('hidden');
+    document.getElementById('play-screen').classList.add('hidden');
 
-    // 2. Reset các biến số điểm (Thay tên biến cho đúng với code của bạn)
-    userRight = 0;
-    userWrong = 0;
-    aiRight = 0;
-    aiWrong = 0;
-    currentTime = 60; // Hoặc thời gian mặc định của bạn
+    // 3. Hiện lại màn hình chọn độ khó (Intro)
+    document.getElementById('intro-screen').classList.remove('hidden');
 
-    // 3. Cập nhật lại hiển thị điểm trên giao diện
-    updateScoreUI(); 
+    // 4. Reset các biến số điểm về 0
+    pScore = 0; pWrong = 0; 
+    aiScore = 0; aiWrong = 0; 
+    pCount = 0; aiCount = 0;
 
-    // 4. Xóa các rác cũ đang bay trên màn hình (nếu có)
-    const oldTrash = document.querySelectorAll('.trash-item');
+    // 5. Cập nhật giao diện điểm số về 0 ngay lập tức
+    document.getElementById('p-score').innerText = "0";
+    document.getElementById('p-wrong').innerText = "0";
+    document.getElementById('ai-score').innerText = "0";
+    document.getElementById('ai-wrong').innerText = "0";
+    document.getElementById('timer').innerText = "20"; // Reset lại đồng hồ hiển thị
+    
+    // 6. Xóa các rác còn sót lại (nếu có)
+    const oldTrash = document.querySelectorAll('.item');
     oldTrash.forEach(item => item.remove());
 
-    // 5. Chạy lại hàm bắt đầu game hoặc hàm tạo rác
-    startNewRound(); 
+    // Reset lại nội dung log của AI
+    document.getElementById('ai-log').innerText = "> ĐANG CHỜ...";
 }
     /* KHỞI TẠO LÁ BAY */
     function createLeaves() {
@@ -809,25 +856,29 @@ const vnNames = {
     function checkEnd() { if(pCount >= config[diff].total && aiCount >= config[diff].total && !document.querySelector('.item')) setTimeout(endGame, 800); }
     
     function endGame() {
-        gameActive = false; 
-        document.querySelectorAll('.item').forEach(item => item.remove());
-        document.getElementById('play-screen').classList.add('hidden');
-        document.getElementById('result-screen').classList.remove('hidden');
-        document.getElementById('final-stats').innerHTML = `👤 <b>EM:</b> Đúng ${pScore} - Sai ${pWrong}<br>🤖 <b>ROBOT:</b> Đúng ${aiScore} - Sai ${aiWrong}`;
-        const msg = document.getElementById('winner-msg');
-        const icon = document.getElementById('result-icon');
-        if(pScore > aiScore) {
-            msg.innerText = "🏆 BẠN GIỎI QUÁ!";
-            icon.innerText = "⭐";
-            startFireworks();
-        } else if (pScore === aiScore) {
-            msg.innerText = "🤝 HÒA NHA!";
-            icon.innerText = "✨";
-        } else {
-            msg.innerText = "🤖 CỐ GẮNG LÊN!";
-            icon.innerText = "💪";
-        }
+    gameActive = false; 
+    document.querySelectorAll('.item').forEach(item => item.remove());
+    document.getElementById('play-screen').classList.add('hidden');
+    document.getElementById('result-screen').classList.remove('hidden');
+    
+    // Đã thay đổi chữ EM -> BẠN, ROBOT -> AI tại đây:
+    document.getElementById('final-stats').innerHTML = `👤 <b>BẠN:</b> Đúng ${pScore} - Sai ${pWrong}<br>🤖 <b>AI:</b> Đúng ${aiScore} - Sai ${aiWrong}`;
+    
+    const msg = document.getElementById('winner-msg');
+    const icon = document.getElementById('result-icon');
+    
+    if(pScore > aiScore) {
+        msg.innerText = "🏆 BẠN GIỎI QUÁ!";
+        icon.innerText = "⭐";
+        startFireworks();
+    } else if (pScore === aiScore) {
+        msg.innerText = "🤝 HÒA NHA!";
+        icon.innerText = "✨";
+    } else {
+        msg.innerText = "🤖 CỐ GẮNG LÊN!";
+        icon.innerText = "💪";
     }
+}
 
     /* HIỆU ỨNG PHÁO HOA */
     const canvas = document.getElementById('fw-canvas'); const ctx = canvas.getContext('2d'); let pts = [];
