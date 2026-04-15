@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="vi">
-<head>
+<head >
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300..700&display=swap" rel="stylesheet">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>AI Recycling - Green Planet</title>
@@ -34,7 +35,9 @@
             align-items: center;
             background-size: cover;
             height: 100vh;
-            height: -webkit-fill-available; 
+            height: -webkit-fill-available;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale; 
         }
 
         #game-container { 
@@ -72,7 +75,11 @@
         }
 
         /* --- GIAO DIỆN --- */
-        * { box-sizing: border-box; font-family: 'Segoe UI', 'Comic Sans MS', cursive, sans-serif; }
+        * { 
+    box-sizing: border-box; 
+    /* Ưu tiên Quicksand, nếu máy không tải được mới dùng các font dự phòng */
+    font-family: 'Quicksand', 'Segoe UI', 'Comic Sans MS', cursive, sans-serif; 
+}
         
         .screen {
             position: absolute;
