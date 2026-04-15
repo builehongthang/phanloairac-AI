@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head >
-    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300..700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Itim&display=swap" rel="stylesheet">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>AI Recycling - Green Planet</title>
@@ -10,8 +10,8 @@
         :root { 
             --organic: #FFEB3B; 
             --inorganic: #FF5252; 
-            --recycle: #4CAF50;   
-            --success: #66BB6A; 
+            --recycle: #1c93f5;   
+            --success: #6688bb; 
             --danger: #EF5350;
             --main-green: #4CAF50; 
             --hover-green: #388E3C; 
@@ -77,9 +77,10 @@
         /* --- GIAO DIỆN --- */
         * { 
     box-sizing: border-box; 
-    /* Ưu tiên Quicksand, nếu máy không tải được mới dùng các font dự phòng */
-    font-family: 'Quicksand', 'Segoe UI', 'Comic Sans MS', cursive, sans-serif; 
+    font-family: 'Itim', cursive, sans-serif; 
 }
+
+/* Để font này đẹp nhất, bạn nên tăng font-weight nếu cần */
         
         .screen {
             position: absolute;
@@ -161,11 +162,12 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    line-height: 1;
     gap: 10px;
     text-transform: uppercase;
-    
+    line-height: 1;
     /* Hiệu ứng nhấp nháy tập trung vào quầng sáng bên ngoài */
-    animation: pulse-glow 2s infinite ease-in-out;
+    animation: pulse-glow 3s infinite ease-in-out;
 }
 
 /* Định nghĩa màu sắc riêng biệt cho từng nút để tăng độ tương phản */
@@ -220,7 +222,7 @@
     /* Bố cục chính */
     width: 95%;
     max-width: 600px;
-    height: 80px; 
+    height: 100px; 
     margin: 15px auto;
     background: #ffffff; 
     display: flex; 
@@ -229,8 +231,8 @@
     padding: 0 15px;
 
     /* Làm nổi bật khung bằng viền đậm và bóng khối */
-    border-radius: 50px; 
-    border: 4px solid #af14f7; /* Viền xanh đậm tạo khung chắc chắn */
+    border-radius: 20px; 
+    border: 2px solid #af14f7; /* Viền xanh đậm tạo khung chắc chắn */
     box-shadow: 0 6px 0px rgba(46, 125, 50, 0.2); /* Bóng đổ cứng tạo độ dày như nút bấm */
     
     /* Font chữ tổng thể */
@@ -255,7 +257,7 @@
     justify-content: space-evenly;
     align-items: flex-end;
     width: 100%;
-    padding: 80px 0 60px 0;
+    padding: 40px 0 40px 0;
     
     /* Thay background đơn màu bằng Gradient */
     background: linear-gradient(to bottom, #F1F8E9 0%, #F1F8E9 80%, #ffffff 100%);
@@ -278,7 +280,7 @@
         }
         .bin.organic::after { background: var(--organic); border-top: 8px solid #fbff05; }
         .bin.inorganic::after { background: var(--inorganic); border-top: 8px solid #ec1717; }
-        .bin.recycle::after { background: var(--recycle); border-top: 8px solid #1de02d; }
+        .bin.recycle::after { background: var(--recycle); border-top: 8px solid #0e04a1; }
         .header, .zone-info {
     /* Đổ bóng giúp các bảng này "nổi" lên khỏi nền */
     box-shadow: 0 8px 15px rgba(0, 0, 0, 0.05), 0 4px 0px rgba(165, 214, 167, 0.4);
@@ -409,6 +411,39 @@
     width: auto;
     object-fit: contain;
 }
+#level-title {
+    /* 1. Nền Gradient chuyển màu từ xanh sáng sang xanh đậm để tạo độ sâu */
+    background: linear-gradient(180deg, #66BB6A 0%, #2E7D32 100%) !important;
+    
+    /* 2. Màu chữ trắng tinh khôi nổi bật trên nền đậm */
+    color: #ffffff !important;
+    
+    /* 3. Tăng độ bo tròn và khoảng cách để trông "mập mạp" đáng yêu */
+    padding: 10px 30px !important; 
+    border-radius: 50px !important;
+    
+    /* 4. Font chữ mập (Itim) kết hợp hiệu ứng chữ */
+    font-family: 'Itim', cursive !important;
+    font-size: 1.1rem !important;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: bold;
+    
+    /* 5. Hiệu ứng đổ bóng 3D để nó "lồi" hẳn lên khỏi thanh trắng */
+    box-shadow: 0 4px 0px #1B5E20, 0 6px 15px rgba(0,0,0,0.2) !important;
+    
+    /* 6. Viền mỏng màu trắng bên trong để tạo hiệu ứng ánh sáng (Inner Glow) */
+    border: 2px solid rgba(255, 255, 255, 0.3) !important;
+    
+    /* 7. Giữ chữ luôn nằm trên 1 hàng và căn giữa hoàn hảo */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    white-space: nowrap;
+    
+    /* Mẹo: Chỉnh nhẹ để chữ không bị lệch xuống do Flexbody */
+    line-height: 1;
+}
     </style>
 </head>
 <body>
@@ -437,7 +472,7 @@
     <div id="play-screen" class="screen hidden" style="padding: 0; justify-content: flex-start;">
         <div class="header">
             <div>⏰ <span id="timer">45</span>s</div>
-            <div id="level-title" style="background: #E8F5E9; padding: 5px 15px; border-radius: 20px;">---</div>
+            <div id="level-title">---</div>
             <div>🎒 Còn: <span id="items-left">0</span></div>
         </div>
         <div class="bins-container">
