@@ -7,9 +7,9 @@
     <style>
         /* --- BẢNG MÀU PASTEL & CẤU HÌNH --- */
         :root { 
-            --organic: #8D6E63; 
-            --plastic: #4FC3F7; 
-            --paper: #FFD54F;   
+            --organic: #FFEB3B; 
+            --inorganic: #FF5252; 
+            --recycle: #4CAF50;   
             --success: #66BB6A; 
             --danger: #EF5350;
             --main-green: #4CAF50; 
@@ -18,14 +18,14 @@
             --sky-blue: #B3E5FC;
         }
 
-        /* --- CẤU TRÚC HIỂN THỊ CHÍNH (SỬA LỖI LỆCH) --- */
+        /* --- CẤU TRÚC HIỂN THỊ CHÍNH --- */
         html, body {
             margin: 0;
             padding: 0;
             width: 100%;
             height: 100%;
             overflow: hidden;
-            background-color: var(--bg-color); /* Nền dự phòng */
+            background-color: var(--bg-color);
         }
 
         body { 
@@ -33,33 +33,21 @@
             justify-content: center;
             align-items: center;
             background-size: cover;
-            /* Đảm bảo chiều cao luôn chiếm toàn bộ màn hình thực tế */
             height: 100vh;
             height: -webkit-fill-available; 
         }
 
         #game-container { 
-    /* Đặt kích thước lấp đầy toàn bộ khung nhìn */
-    width: 100vw; 
-    height: 100vh;
-    
-    /* Loại bỏ các giới hạn để tràn màn hình */
-    max-width: 100%; 
-    max-height: 100%;
-    
-    /* Loại bỏ bo góc nếu bạn muốn full hoàn toàn không tì vết */
-    border-radius: 0; 
-    
-    /* Các thuộc tính quan trọng khác */
-    background: rgba(255, 255, 255, 0.95); 
-    box-shadow: none; /* Full màn hình thì không cần đổ bóng bên ngoài */
-    position: relative;
-    display: flex; 
-    flex-direction: column;
-    overflow: hidden;
-}
+            width: 100vw; 
+            height: 100vh;
+            position: relative;
+            display: flex; 
+            flex-direction: column;
+            overflow: hidden;
+            background: rgba(255, 255, 255, 0.95); 
+        }
 
-        /* --- HIỆU ỨNG THÙNG RÁC --- */
+        /* --- HIỆU ỨNG --- */
         .bin.correct-flash::after {
             animation: flashSuccess 0.5s ease-out;
             box-shadow: 0 0 40px 15px rgba(255, 255, 255, 0.9);
@@ -83,80 +71,196 @@
             40%, 60% { transform: translate3d(6px, 0, 0); }
         }
 
-        /* --- GIAO DIỆN CHÍNH --- */
+        /* --- GIAO DIỆN --- */
         * { box-sizing: border-box; font-family: 'Segoe UI', 'Comic Sans MS', cursive, sans-serif; }
         
-        /* --- MÀN HÌNH CHỜ & MENU (SỬA CĂN GIỮA NỘI DUNG) --- */
         .screen {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center; /* Đảm bảo nội dung luôn nằm giữa khi màn hình giãn ra */
-}
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
         
         #intro-screen { 
-            background-image: url('hinhnenchinh2.jpeg'); 
+            background: url('hinhnenchinh2.jpeg') no-repeat center center; 
             background-size: cover;
         }
 
-        #intro-screen button { 
-            background: rgba(255,255,255,0.9); 
-            padding: 20px; 
-            border-radius: 25px; 
-            color: #2E7D32; 
-            font-size: clamp(1.5rem, 4vw, 2.5rem); 
+        .title-box {
+            background: rgba(255,255,255,0.85);
+            padding: 15px 30px;
+            border-radius: 30px;
             border: 4px dashed #A5D6A7;
-            margin: 0 0 220px 0;
+            text-align: center;
+            margin-bottom: 20px;
         }
 
-        #menu { 
-            background: #F1F8E9 url('hinhnen4.jpg') no-repeat center center; 
-            background-size: cover;
+        .title-box h1 {
+            margin: 0;
+            color: #2E7D32;
+            font-size: clamp(1.5rem, 5vw, 2.5rem);
         }
 
-        #menu h1 { 
-            font-size: clamp(2.5rem, 8vw, 4.5rem); 
-            color: #2E7D32; 
-            margin: 0; 
-            text-shadow: 4px 4px 0px #FFF;
-        }
+        @keyframes border-glow {
+    0%, 100% { 
+        opacity: 0.6; 
+        transform: scale(1);
+        box-shadow: 0 0 15px var(--glow-color), inset 0 0 10px var(--glow-color);
+    }
+    50% { 
+        opacity: 1; 
+        transform: scale(1.02);
+        box-shadow: 0 0 35px var(--glow-color), inset 0 0 15px var(--glow-color);
+    }
+}
 
-        .btn-lvl { 
-            padding: 15px 40px; 
-            margin: 10px; 
-            font-size: 1.2rem; 
-            cursor: pointer; 
-            border: none; 
-            border-radius: 30px; 
-            background: var(--main-green); 
-            color: white; 
-            font-weight: bold; 
-            box-shadow: 0 6px 0 #388E3C; 
-            transition: 0.2s;
-        }
-        .btn-lvl:active { transform: translateY(4px); box-shadow: 0 2px 0 #388E3C; }
+/* Container để căn chỉnh các nút cách nhau đẹp mắt */
+.difficulty-container {
+    display: flex;
+    gap: 50px; /* Khoảng cách giữa các nút rộng hơn */
+    padding: 20px;
+    perspective: 1000px; /* Tạo hiệu ứng 3D khi di chuột */
+    margin-bottom:240px; /* Đẩy các nút lên cao hơn để tránh bị che khuất bởi lá rơi */
+}
 
-        /* --- MÀN HÌNH CHƠI --- */
+@keyframes pulse-glow {
+    0%, 100% {
+        filter: drop-shadow(0 0 5px var(--glow-color));
+        transform: scale(1);
+    }
+    50% {
+        filter: drop-shadow(0 0 20px var(--glow-color));
+        transform: scale(1.05);
+    }
+}
+
+.btn-lvl { 
+    position: relative;
+    padding: 15px 40px; 
+    font-size: 2rem; 
+    cursor: pointer; 
+    /* Chuyển sang màu đậm của từng loại để dễ đọc trên nền trắng */
+    color: var(--text-color); 
+    font-weight: 1000; 
+    border: 3px solid var(--glow-color); /* Viền rõ ràng */
+    border-radius: 30px; 
+    background: #fff; 
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    text-transform: uppercase;
+    
+    /* Hiệu ứng nhấp nháy tập trung vào quầng sáng bên ngoài */
+    animation: pulse-glow 2s infinite ease-in-out;
+}
+
+/* Định nghĩa màu sắc riêng biệt cho từng nút để tăng độ tương phản */
+.btn-lvl[onclick*="'easy'"] { 
+    --glow-color: #4CAF50; 
+    --text-color: #ffffff; /* Xanh lá đậm */
+}
+
+.btn-lvl[onclick*="'medium'"] { 
+    --glow-color: #00BFFF; 
+    --text-color: #ffffff; /* Xanh dương đậm */
+}
+
+.btn-lvl[onclick*="'hard'"] { 
+    --glow-color: #FF3131; 
+    --text-color: #ffffff; /* Đỏ đậm */
+}
+
+/* Tạo các lớp viền màu 3D phồng (Y hệt hình) */
+.btn-lvl::before {
+    content: "";
+    position: absolute;
+    top: -5px; left: -5px; right: -5px; bottom: -5px; /* Nới rộng lớp nền */
+    border-radius: 50px; /* Bo góc tương ứng */
+    z-index: -1;
+    background: var(--outer-layer-color); /* Nền ngoài cùng */
+    
+    /* Đa lớp Box Shadow (Phần Wow): tạo độ phồng và các lớp màu */
+    box-shadow: 
+        /* 1. Viền trong cùng (Màu đậm nhất) */
+        0 0 0 2px var(--inner-border-color),
+        /* 2. Viền giữa (Màu trung gian) */
+        0 0 0 5px var(--mid-border-color),
+        /* 3. Tạo độ phồng Neumorphism (Inner Glow) hắt vào */
+        inset 0 0 8px rgba(255,255,255,0.8),
+        inset 0 0 15px rgba(0,0,0,0.05);
+}
+
+/* Khi di chuột vào: Nút rực sáng và phóng to mạnh */
+/* Hiệu ứng khi di chuột: Chữ trắng lại nhưng nền cũng đổi màu để không bị chói */
+.btn-lvl:hover {
+    background: var(--glow-color);
+    /* color: #fff; */
+    box-shadow: 0 0 30px var(--glow-color);
+    transform: translateY(-5px) scale(1.1);
+}
+
+.btn-lvl:active {
+    transform: scale(0.95);
+}
         .header { 
-            width: 100%; height: 70px; background: #FFF; color: #2E7D32; 
-            display: flex; justify-content: space-around; align-items: center; 
-            font-weight: 900; font-size: 1.2rem; border-bottom: 4px solid #E8F5E9;
-            flex-shrink: 0;
-        }
+    /* Bố cục chính */
+    width: 95%;
+    max-width: 600px;
+    height: 80px; 
+    margin: 15px auto;
+    background: #ffffff; 
+    display: flex; 
+    justify-content: space-around; 
+    align-items: center; 
+    padding: 0 15px;
 
-        .bins-container { 
-            display: flex; justify-content: space-evenly; width: 100%; padding: 15px 0; 
-            background: #F1F8E9; border-bottom: 6px solid #A5D6A7;
-            flex-shrink: 0;
-        }
+    /* Làm nổi bật khung bằng viền đậm và bóng khối */
+    border-radius: 50px; 
+    border: 4px solid #af14f7; /* Viền xanh đậm tạo khung chắc chắn */
+    box-shadow: 0 6px 0px rgba(46, 125, 50, 0.2); /* Bóng đổ cứng tạo độ dày như nút bấm */
+    
+    /* Font chữ tổng thể */
+    font-weight: 900; 
+    color: #2E7D32;
+    z-index: 100;
+}
+/* Tác động trực tiếp vào div ở giữa (nơi chứa chữ ĐANG THI ĐẤU) */
+.header > div:nth-child(2) {
+    background: #cd07f5 !important; /* Đổi màu nền sang xanh đậm */
+    color: #ffffff !important;    /* Chữ trắng cho nổi bật */
+    padding: 8px 25px !important; 
+    border-radius: 40px !important;
+    font-size: 1rem !important;
+    text-transform: uppercase;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    white-space: nowrap;
+}
+
+        .bins-container {
+    display: flex;
+    justify-content: space-evenly;
+    align-items: flex-end;
+    width: 100%;
+    padding: 80px 0 60px 0;
+    
+    /* Thay background đơn màu bằng Gradient */
+    background: linear-gradient(to bottom, #F1F8E9 0%, #F1F8E9 80%, #ffffff 100%);
+    
+    /* Làm mờ đường viền dưới hoặc bỏ hẳn để không bị chia cắt */
+    border-bottom: 2px solid rgba(165, 214, 167, 0.3); 
+    
+    flex-shrink: 0;
+}
         
         .bin { 
-            width: 120px; height: 130px; position: relative;
+            width: 150px; height: 200px; position: relative;
             display: flex; flex-direction: column; align-items: center; justify-content: flex-end;
             filter: drop-shadow(0 8px 0px rgba(0,0,0,0.1));
         }
@@ -165,38 +269,87 @@
             border-radius: 10px 10px 25px 25px; z-index: 1;
             clip-path: polygon(5% 0, 95% 0, 100% 100%, 0 100%);
         }
-        .bin.organic::after { background: var(--organic); border-top: 8px solid #6D4C41; }
-        .bin.plastic::after { background: var(--plastic); border-top: 8px solid #039BE5; }
-        .bin.paper::after { background: var(--paper); border-top: 8px solid #FBC02D; }
-        
+        .bin.organic::after { background: var(--organic); border-top: 8px solid #fbff05; }
+        .bin.inorganic::after { background: var(--inorganic); border-top: 8px solid #ec1717; }
+        .bin.recycle::after { background: var(--recycle); border-top: 8px solid #1de02d; }
+        .header, .zone-info {
+    /* Đổ bóng giúp các bảng này "nổi" lên khỏi nền */
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.05), 0 4px 0px rgba(165, 214, 167, 0.4);
+}
         .bin span { 
             position: relative; z-index: 3; text-align: center; 
-            font-size: 14px; font-weight: 900; color: white; padding-bottom: 15px;
+            font-size: 15px; font-weight: 900; color: white; padding-bottom: 30px;
         }
 
         .play-zones { 
             display: flex; width: 100%; flex: 1; 
-            background: white url('hinhnen1.jpg') no-repeat center/cover;
+            background: white no-repeat center/cover;
             position: relative;
         }
 
         .zone { flex: 1; position: relative; }
-        #player-zone { border-right: 4px dashed #A5D6A7; background: rgba(255,255,255,0.3); }
+        /* Bảng điểm bên BẠN */
+#player-zone { 
+    background: #E3F2FD !important; /* Xanh dương cực nhạt */
+    border: 2px solid #2196F3 !important;
+    box-shadow: 0 4px 0px rgba(33, 150, 243, 0.2);
+}
+
+/* Bảng điểm bên AI */
+#ai-zone { 
+    background: #e5b7eb !important; /* Tím nhạt */
+    border: 2px solid #c757db !important;
+    box-shadow: 0 4px 0px rgba(156, 39, 176, 0.2);
+}
 
         .zone-info { 
-            padding: 10px; background: rgba(255,255,255,0.9); font-weight: bold; 
-            margin: 10px; border-radius: 15px; border: 2px solid #E8F5E9;
-            position: relative; z-index: 10;
-        }
+    /* Cấu trúc Flexbox để căn giữa hoàn hảo */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    
+    /* Kích thước gọn gàng */
+    padding: 10px 20px; 
+    margin: 15px auto; 
+    width: fit-content; /* Tự động co giãn theo nội dung */
+    min-width: 200px;
+    
+    /* Trang trí nền: Sử dụng màu trắng đục nhẹ nhàng */
+    background: rgba(255, 255, 255, 0.95); 
+    border-radius: 50px; /* Bo tròn hoàn toàn hai đầu cho giống nút bấm */
+    border: 3px solid #A5D6A7; /* Viền xanh lá nhạt */
+    
+    /* Chữ: Đậm và dễ đọc */
+    font-weight: 800;
+    color: #37474F; /* Màu xám đen sang trọng cho chữ chính */
+    font-size: 1.1rem;
+    
+    /* Đổ bóng đổ khối (không hiệu ứng động) */
+    box-shadow: 0 4px 0px rgba(165, 214, 167, 0.3); 
+    
+    position: relative; 
+    z-index: 10;
+    pointer-events: none; /* Người dùng không tương tác được vào bảng này */
+}
+
+/* Tùy chỉnh màu sắc bên trong bảng điểm cho nổi bật */
+.zone-info span#p-score, .zone-info span#ai-score {
+    color: #2E7D32; /* Màu xanh lá cho điểm đúng */
+    font-size: 1.2rem;
+}
+
+.zone-info span#p-wrong, .zone-info span#ai-wrong {
+    color: #D32F2F; /* Màu đỏ cho điểm sai */
+}
         
         .item { 
-            width: 80px; height: 80px; cursor: grab; position: absolute; 
-            font-size: 55px; display: flex; align-items: center; justify-content: center; 
+            width: 200px; height: 20px; cursor: grab; position: absolute; 
+            font-size: 100px; display: flex; align-items: center; justify-content: center; 
             z-index: 100; filter: drop-shadow(0 10px 15px rgba(0,0,0,0.2));
-            touch-action: none; /* Quan trọng cho di động */
+            touch-action: none; 
         }
 
-        /* --- AI LOG --- */
         #ai-log { 
             position: absolute; bottom: 10px; right: 10px; width: 90%;
             background: rgba(55, 71, 79, 0.9); color: #FFF; padding: 10px; 
@@ -205,11 +358,10 @@
             z-index: 5;
         }
 
-        /* --- KẾT QUẢ --- */
         .result-box {
             background: white; padding: 30px; border-radius: 40px; 
             border: 8px solid var(--main-green); box-shadow: 0 20px 0px rgba(0,0,0,0.05);
-            width: 90%; max-width: 400px;
+            width: 90%; max-width: 400px; text-align: center;
         }
 
         #countdown-overlay { 
@@ -220,13 +372,42 @@
 
         .hidden { display: none !important; }
 
-        #fw-canvas {
-            position: fixed; top: 0; left: 0; pointer-events: none; z-index: 3000;
-        }
+        #fw-canvas { position: fixed; top: 0; left: 0; pointer-events: none; z-index: 3000; }
+        
+        @keyframes fall { to { transform: translateY(110vh) rotate(360deg); } }
+        @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-20px); } }
+        .company-logo {
+    position: fixed;
+    top: 15px;
+    right: 20px;
+    z-index: 1000;
+    
+    /* Tạo nền trắng bo tròn */
+    background: #ffffff;
+    padding: 15px 25px;       /* Khoảng cách giữa logo và viền trắng */
+    border-radius: 100px;     /* Bo tròn hoàn toàn dạng viên thuốc */
+    
+    /* Viền và bóng đổ đồng bộ với Header */
+    border: 2px solid #A5D6A7; 
+    box-shadow: 0 2px 0px rgba(165, 214, 167, 0.3);
+    
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+}
+
+.company-logo img {
+    height: 100px;           /* Kích thước vừa phải để không lấn át Header */
+    width: auto;
+    object-fit: contain;
+}
     </style>
 </head>
 <body>
-
+<div class="company-logo">
+    <img src="logo.png" alt="Company Logo">
+</div>
 <div id="leaf-container" style="position: absolute; width: 100%; height: 100%; overflow: hidden; pointer-events: none; z-index: 1;"></div>
 <canvas id="fw-canvas"></canvas>
 
@@ -234,18 +415,15 @@
     <div id="countdown-overlay">3</div>
 
     <div id="intro-screen" class="screen">
-        <button class="btn-lvl" style="font-size: 2rem; padding: 15px 40px;" onclick="showMenu()">PHÂN LOẠI RÁC CÙNG AI</button>
-        <!-- <button class="btn-lvl" style="font-size: 1.4rem; padding: 15px 40px;" onclick="showMenu()">BẮT ĐẦU NGAY ✨</button> -->
-    </div>
-
-    <div id="menu" class="screen hidden">
-        <div style="font-size: 80px; margin-bottom: 10px; animation: bounce 2s infinite;">🌱</div> 
-        <h1>HÀNH TINH<br><span style="color:#2e7d32;">XANH</span></h1>
-        <p style="font-size: 1.1rem; color: #333; margin-bottom: 20px; font-weight: bold;">💎 Hãy chọn thử thách cho mình nhé 💎</p>
-        <div>
-            <button class="btn-lvl" style="background: #81C784;" onclick="startCountdown('easy')">🎈 DỄ</button>
-            <button class="btn-lvl" style="background: #4FC3F7;" onclick="startCountdown('medium')">🚀 VỪA</button>
-            <button class="btn-lvl" style="background: #FF8A65;" onclick="startCountdown('hard')">🔥 KHÓ</button>
+        <!-- <div class="title-box">
+            <h1>PHÂN LOẠI RÁC CÙNG AI</h1>
+            <p style="margin: 5px 0 0; font-weight: bold; color: #666;">Chọn mức độ để bắt đầu</p>
+        </div> -->
+        
+        <div class="difficulty-container">
+            <button class="btn-lvl" style="background: #81C784;" onclick="startCountdown('easy')">🎈AI 'Tiểu Học'</button>
+            <button class="btn-lvl" style="background: #4FC3F7;" onclick="startCountdown('medium')">🚀AI 'THCS'</button>
+            <button class="btn-lvl" style="background: #FF8A65;" onclick="startCountdown('hard')">🔥AI 'THPT'</button>
         </div>
     </div>
 
@@ -256,9 +434,9 @@
             <div>🎒 Còn: <span id="items-left">0</span></div>
         </div>
         <div class="bins-container">
-            <div class="bin organic" data-type="organic"><span>🍂<br>HỮU CƠ</span></div>
-            <div class="bin plastic" data-type="plastic"><span>🥤<br>NHỰA</span></div>
-            <div class="bin paper" data-type="paper"><span>📄<br>GIẤY</span></div>
+            <div class="bin organic" data-type="organic"><span>🥦<br>RÁC HỮU CƠ</span></div>
+            <div class="bin inorganic" data-type="inorganic"><span>🥤<br>RÁC VÔ CƠ</span></div>
+            <div class="bin recycle" data-type="recycle"><span>📄<br>RÁC TÁI CHẾ</span></div>
         </div>
         <div class="play-zones">
             <div id="player-zone" class="zone">
@@ -269,7 +447,7 @@
             </div>
             <div id="ai-zone" class="zone">
                 <div class="zone-info">
-                    <span>🤖 ROBOT:</span>
+                    <span>🤖 AI:</span>
                     <span style="color:var(--plastic)">✅ <span id="ai-score">0</span> | ❌ <span id="ai-wrong">0</span></span>
                 </div>
                 <div id="ai-log">> ĐANG CHỜ...</div>
@@ -288,12 +466,7 @@
 </div>
 
 <script>
-    /* TOÀN BỘ LOGIC JAVASCRIPT ĐƯỢC GIỮ NGUYÊN VÀ TỐI ƯU CĂN CHỈNH TỌA ĐỘ */
-    function showMenu() {
-        document.getElementById('intro-screen').classList.add('hidden');
-        document.getElementById('menu').classList.remove('hidden');
-    }    
-
+    /* KHỞI TẠO LÁ BAY */
     function createLeaves() {
         const container = document.getElementById('leaf-container');
         const leafEmojis = ['🌸', '🍀', '🍃', '🌼', '🍂'];
@@ -312,20 +485,36 @@
     }
     createLeaves();
 
-    const fullKB = [
-        {x: 90, y: 10, t: 'organic'},{x: 85, y: 15, t: 'organic'} ,{x: 95, y: 5, t: 'organic'} ,
-        {x: 40, y: 45, t: 'plastic'}, {x: 65, y: 35, t: 'organic'},
-        {x: 10, y: 30, t: 'plastic'}, {x: 15, y: 35, t: 'plastic'},{x: 5, y: 25, t: 'plastic'} ,
-        {x: 50, y: 70, t: 'paper'}, {x: 55, y: 75, t: 'paper'},{x: 45, y: 65, t: 'paper'} 
-    ];
+    /* DỮ LIỆU LOGIC GAME - CẬP NHẬT MỚI */
+const fullKB = [
+    // Nhóm Hữu cơ (Organic)
+    {x: 90, y: 10, t: 'organic'}, {x: 85, y: 15, t: 'organic'}, {x: 95, y: 5, t: 'organic'}, 
+    // Nhóm Vô cơ (Inorganic)
+    {x: 10, y: 30, t: 'inorganic'}, {x: 15, y: 35, t: 'inorganic'}, {x: 5, y: 25, t: 'inorganic'},
+    // Nhóm Tái chế (Recycle)
+    {x: 50, y: 70, t: 'recycle'}, {x: 55, y: 75, t: 'recycle'}, {x: 45, y: 65, t: 'recycle'} 
+];
 
-    const itemPool = [
-        { e: '🍎', x: 92, y: 8,  t: 'organic' }, { e: '🥤', x: 8,  y: 32, t: 'plastic' }, { e: '📦', x: 48, y: 72, t: 'paper' },
-        { e: '🍌', x: 85, y: 15, t: 'organic' }, { e: '🥫', x: 15, y: 45, t: 'plastic' }, { e: '📰', x: 55, y: 65, t: 'paper' },
-        { e: '🥦', x: 88, y: 12, t: 'organic' }, { e: '🧴', x: 12, y: 38, t: 'plastic' }, { e: '📜', x: 40, y: 80, t: 'paper' }
-    ];
+const itemPool = [
+    // Hữu cơ
+    { e: '🍎', x: 92, y: 8,  t: 'organic' }, 
+    { e: '🍌', x: 85, y: 15, t: 'organic' }, 
+    { e: '🥦', x: 88, y: 12, t: 'organic' },
+    // Vô cơ
+    { e: '🚬', x: 8,  y: 32, t: 'inorganic' }, // Đầu lọc thuốc lá
+    { e: '🐚', x: 15, y: 45, t: 'inorganic' }, // Vỏ sò/ốc
+    { e: '🛍️', x: 12, y: 38, t: 'inorganic' }, // Túi nilon bẩn
+    // Tái chế
+    { e: '🥤', x: 48, y: 72, t: 'recycle' }, // Ly nhựa sạch
+    { e: '📰', x: 55, y: 65, t: 'recycle' }, // Báo cũ
+    { e: '🥫', x: 40, y: 80, t: 'recycle' }  // Lon nhôm
+];
 
-    const vnNames = { organic: "HỮU CƠ", plastic: "NHỰA", paper: "GIẤY" };
+const vnNames = { 
+    organic: "HỮU CƠ", 
+    inorganic: "VÔ CƠ", 
+    recycle: "TÁI CHẾ" 
+};
     const config = { 
         easy:   { total: 10, k: 1, mem: 3,  speed: 1900, think: 1500 }, 
         medium: { total: 15, k: 2, mem: 6,  speed: 1500, think: 1200  }, 
@@ -348,7 +537,8 @@
 
     function startCountdown(d) {
         diff = d;
-        document.getElementById('menu').classList.add('hidden');
+        // Ẩn màn hình intro thay vì ẩn menu cũ
+        document.getElementById('intro-screen').classList.add('hidden');
         const ov = document.getElementById('countdown-overlay');
         ov.style.display = 'flex';
         let c = 3;
@@ -362,7 +552,7 @@
 
     function initGame() {
         document.getElementById('play-screen').classList.remove('hidden');
-        let vnDiff = diff === 'easy' ? "Mức DỄ" : (diff === 'medium' ? "Mức VỪA" : "Mức KHÓ");
+        let vnDiff = diff === 'easy' ? "ĐANG THI ĐẤU CÙNG AI 'TIỂU HỌC'" : (diff === 'medium' ? "ĐANG THI ĐẤU CÙNG AI 'THCS'" : "ĐANG THI ĐẤU CÙNG AI 'THPT'");
         document.getElementById('level-title').innerText = vnDiff;
         document.getElementById('items-left').innerText = config[diff].total;
         gameActive = true;
@@ -504,15 +694,12 @@
         }
     }
 
+    /* HIỆU ỨNG PHÁO HOA */
     const canvas = document.getElementById('fw-canvas'); const ctx = canvas.getContext('2d'); let pts = [];
     function startFireworks() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; loop(); setInterval(() => explode(Math.random()*canvas.width, Math.random()*canvas.height/2), 600); }
     function explode(x,y) { const c = `hsl(${Math.random()*360},100%,50%)`; for(let i=0; i<30; i++) pts.push({x,y,vx:(Math.random()-0.5)*15,vy:(Math.random()-0.5)*15,l:1,c}); }
     function loop() { ctx.clearRect(0,0,canvas.width,canvas.height); pts.forEach((p,i) => { p.x+=p.vx; p.y+=p.vy; p.vy+=0.15; p.l-=0.02; ctx.fillStyle=p.c; ctx.globalAlpha=p.l; ctx.beginPath(); ctx.arc(p.x,p.y,3,0,Math.PI*2); ctx.fill(); if(p.l<=0) pts.splice(i,1); }); requestAnimationFrame(loop); }
 </script>
 
-<style>
-    @keyframes fall { to { transform: translateY(110vh) rotate(360deg); } }
-    @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-20px); } }
-</style>
 </body>
 </html>
