@@ -15,7 +15,7 @@
             --danger: #EF5350;
             --main-green: #4CAF50; 
             --hover-green: #388E3C; 
-            --bg-color: #E8F5E9;
+            /* --bg-color: #fefefe; */
             --sky-blue: #B3E5FC;
         }
 
@@ -26,7 +26,7 @@
             width: 100%;
             height: 100%;
             overflow: hidden;
-            background-color: var(--bg-color);
+            /* background-color: var(--bg-color); */
         }
 
         body { 
@@ -47,7 +47,7 @@
             display: flex; 
             flex-direction: column;
             overflow: hidden;
-            background-color: #f0f0f0; /* Màu nền ngăn cách giữa 2 zone */
+            background: url('./moitruong2.png'); /* Màu nền ngăn cách giữa 2 zone */
     gap: 10px; /* Khoảng hở giữa 2 bên */
     -webkit-user-select: none;
     -moz-user-select: none;
@@ -239,7 +239,7 @@
     max-width: 800px;
     height: 100px; 
     margin: 15px auto;
-    background: #ffffff; 
+    background: #fefefe; 
     display: flex; 
     justify-content: space-around; 
     align-items: center; 
@@ -275,7 +275,8 @@
     padding: 40px 0 40px 0;
     
     /* Thay background đơn màu bằng Gradient */
-    background: #f1f8e9;
+    background: url(./moitruong.png);
+    background-size: cover;
     border-bottom: 2px solid rgba(0,0,0,0.05);
     
     flex-shrink: 0;
@@ -652,51 +653,71 @@
     display: flex; justify-content: center; align-items: center;">
     
     <div class="result-box" style="
-        background: #ffffff; 
-        border: 4px solid #4CAF50; 
-        border-radius: 40px; 
-        padding: 30px; 
-        width: 90%; 
-        max-width: 400px; 
-        text-align: center; 
-        box-shadow: 0 15px 0px rgba(76, 175, 80, 0.2), 0 20px 40px rgba(0,0,0,0.1);
-        font-family: 'Itim', cursive;">
-        
-        <div id="result-icon" style="font-size: 80px; margin-bottom: 10px; filter: drop-shadow(0 5px 10px rgba(0,0,0,0.1));">🌟</div>
-        
-        <h2 id="winner-msg" style="
-            font-size: 2.2rem; 
-            color: #2E7D32; 
-            margin: 0 0 15px 0; 
-            text-transform: uppercase; 
-            text-shadow: 2px 2px 0px rgba(0,0,0,0.05);">KẾT QUẢ</h2>
-        
-        <div id="final-stats" style="
-            font-size: 1.3rem; 
-            line-height: 1.8; 
-            margin-bottom: 25px; 
-            background: #F1F8E9; 
-            padding: 20px; 
-            border-radius: 25px; 
-            border: 2px dashed #A5D6A7;
-            color: #1B5E20;"
-            z-index: 10;>
-            </div>
-        
-        <button onclick="resetGame()" class="btn-lvl" style="
-            width: 100%; 
-            font-size: 1.4rem; 
-            background: #2196F3; 
-            color: white; 
-            border: none; 
-            padding: 15px; 
-            border-radius: 50px; 
-            box-shadow: 0 6px 0px #1976D2; 
-            cursor: pointer;
-            display: flex; align-items: center; justify-content: center; gap: 10px;">
-            🔄 THỬ LẠI NÈ
-        </button>
+    background: #ffffff; 
+    border: 4px solid #4CAF50; 
+    border-radius: 40px; 
+    padding: 30px; 
+    width: 90%; 
+    max-width: 400px; 
+    text-align: center; 
+    /* Đổ bóng 3 lớp để tạo hiệu ứng nổi khối mạnh hơn */
+    box-shadow: 0 15px 0px rgba(76, 175, 80, 0.2), 0 20px 40px rgba(0,0,0,0.1), inset 0 0 20px rgba(76, 175, 80, 0.05);
+    font-family: 'Itim', cursive;
+    /* Thêm hiệu ứng xuất hiện nhẹ nhàng */
+    transform: scale(1);
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);">
+    
+    <div id="result-icon" style="
+        font-size: 80px; 
+        margin-bottom: 10px; 
+        /* Hiệu ứng bóng đổ làm icon nổi hẳn lên */
+        filter: drop-shadow(0 10px 10px rgba(0,0,0,0.2));
+        display: inline-block;">
+        🌟
     </div>
+    
+    <h2 id="winner-msg" style="
+        font-size: 2.2rem; 
+        color: #2E7D32; 
+        margin: 0 0 15px 0; 
+        text-transform: uppercase; 
+        /* Tạo hiệu ứng chữ nổi 3D nhẹ */
+        text-shadow: 2px 2px 0px rgba(0,0,0,0.05), 0px 4px 4px rgba(0,0,0,0.1);">
+        KẾT QUẢ
+    </h2>
+    
+    <div id="final-stats" style="
+        font-size: 1.3rem; 
+        line-height: 1.8; 
+        margin-bottom: 25px; 
+        /* Chuyển màu nền sang dạng Gradient nhẹ cho sang */
+        background: linear-gradient(180deg, #F1F8E9 0%, #E8F5E9 100%); 
+        padding: 20px; 
+        border-radius: 25px; 
+        border: 2px dashed #A5D6A7;
+        color: #1B5E20;
+        box-shadow: inset 0 4px 8px rgba(0,0,0,0.03);">
+    </div>
+    
+    <button onclick="resetGame()" class="btn-lvl" style="
+        width: 100%; 
+        font-size: 1.4rem; 
+        /* Nút màu xanh có độ bóng bề mặt */
+        background: linear-gradient(180deg, #42A5F5 0%, #2196F3 100%); 
+        color: white; 
+        border: none; 
+        padding: 15px; 
+        border-radius: 50px; 
+        box-shadow: 0 6px 0px #1976D2; 
+        cursor: pointer;
+        display: flex; align-items: center; justify-content: center; gap: 10px;
+        /* Thêm transition để khi click vào sẽ nảy lên nảy xuống */
+        transition: transform 0.1s, box-shadow 0.1s;"
+        onmousedown="this.style.transform='translateY(4px)'; this.style.boxShadow='0 2px 0px #1976D2'"
+        onmouseup="this.style.transform='translateY(0)'; this.style.boxShadow='0 6px 0px #1976D2'">
+        🔄 THỬ LẠI NHÉ
+    </button>
+</div>
 </div>
 
 </div>
