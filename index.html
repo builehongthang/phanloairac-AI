@@ -8,7 +8,7 @@
     <style>
         /* --- BẢNG MÀU PASTEL & CẤU HÌNH --- */
         :root { 
-            --organic: #FFEB3B; 
+            --organic: #e7d425; 
             --inorganic: #FF5252; 
             --recycle: #1c93f5;   
             --success: #6688bb; 
@@ -47,8 +47,8 @@
             display: flex; 
             flex-direction: column;
             overflow: hidden;
-            background: rgba(255, 255, 255, 0.95); 
-            /* Chặn bôi đen chữ và hình ảnh */
+            background-color: #f0f0f0; /* Màu nền ngăn cách giữa 2 zone */
+    gap: 10px; /* Khoảng hở giữa 2 bên */
     -webkit-user-select: none;
     -moz-user-select: none;
     -ms-user-select: none;
@@ -236,7 +236,7 @@
         .header { 
     /* Bố cục chính */
     width: 95%;
-    max-width: 600px;
+    max-width: 800px;
     height: 100px; 
     margin: 15px auto;
     background: #ffffff; 
@@ -244,7 +244,7 @@
     justify-content: space-around; 
     align-items: center; 
     padding: 0 15px;
-
+    font-size: 30px;
     /* Làm nổi bật khung bằng viền đậm và bóng khối */
     border-radius: 20px; 
     border: 2px solid #af14f7; /* Viền xanh đậm tạo khung chắc chắn */
@@ -275,27 +275,81 @@
     padding: 40px 0 40px 0;
     
     /* Thay background đơn màu bằng Gradient */
-    background: linear-gradient(to bottom, #F1F8E9 0%, #F1F8E9 80%, #ffffff 100%);
-    
-    /* Làm mờ đường viền dưới hoặc bỏ hẳn để không bị chia cắt */
-    border-bottom: 2px solid rgba(165, 214, 167, 0.3); 
+    background: #f1f8e9;
+    border-bottom: 2px solid rgba(0,0,0,0.05);
     
     flex-shrink: 0;
 }
         
         .bin { 
-            width: 150px; height: 200px; position: relative;
-            display: flex; flex-direction: column; align-items: center; justify-content: flex-end;
-            filter: drop-shadow(0 8px 0px rgba(0,0,0,0.1));
-        }
-        .bin::after {
-            content: ""; position: absolute; bottom: 0; width: 100%; height: 85%;
-            border-radius: 10px 10px 25px 25px; z-index: 1;
-            clip-path: polygon(5% 0, 95% 0, 100% 100%, 0 100%);
-        }
-        .bin.organic::after { background: var(--organic); border-top: 8px solid #fbff05; }
-        .bin.inorganic::after { background: var(--inorganic); border-top: 8px solid #ec1717; }
-        .bin.recycle::after { background: var(--recycle); border-top: 8px solid #0e04a1; }
+    width: 150px; 
+    height: 200px; 
+    position: relative;
+    display: flex; 
+    flex-direction: column; 
+    align-items: center; 
+    justify-content: flex-end;
+    /* Đổ bóng dưới chân thùng để tạo cảm giác đặt trên mặt đất */
+    filter: drop-shadow(0 10px 12px rgba(0,0,0,0.2));
+    padding-bottom: 15px; /* Đẩy chữ lên một chút */
+}
+
+.bin::after {
+    content: ""; 
+    position: absolute; 
+    bottom: 0; 
+    width: 100%; 
+    height: 85%;
+    border-radius: 5px 5px 25px 25px; 
+    z-index: 1;
+    clip-path: polygon(8% 0, 92% 0, 100% 100%, 0 100%);
+    
+    /* Hiệu ứng chung cho mọi thân thùng: tạo khối sáng tối 2 bên */
+    box-shadow: 
+        inset 15px 0 25px rgba(0,0,0,0.1), 
+        inset -15px 0 25px rgba(0,0,0,0.1),
+        inset 0 -10px 15px rgba(0,0,0,0.2);
+}
+
+/* THÙNG HỮU CƠ */
+.bin.organic::after { 
+    background: linear-gradient(180deg, #FFEB3B 0%, #FBC02D 100%); 
+    border-top: 6px solid #fbff05; 
+    box-shadow: 
+        inset 15px 0 25px rgba(0,0,0,0.05), 
+        inset -15px 0 25px rgba(0,0,0,0.05),
+        inset 0 10px 10px rgba(255,255,255,0.5); /* Ánh sáng mặt trên */
+}
+
+/* THÙNG VÔ CƠ */
+.bin.inorganic::after { 
+    background: linear-gradient(180deg, #FF5252 0%, #B71C1C 100%); 
+    border-top: 6px solid #ec1717; 
+    box-shadow: 
+        inset 15px 0 25px rgba(0,0,0,0.2), 
+        inset -15px 0 25px rgba(0,0,0,0.2),
+        inset 0 10px 10px rgba(255,255,255,0.3);
+}
+
+/* THÙNG TÁI CHẾ */
+.bin.recycle::after { 
+    background: linear-gradient(180deg, #2196F3 0%, #0D47A1 100%); 
+    border-top: 6px solid #1e88e5; 
+    box-shadow: 
+        inset 15px 0 25px rgba(0,0,0,0.2), 
+        inset -15px 0 25px rgba(0,0,0,0.2),
+        inset 0 10px 10px rgba(255,255,255,0.3);
+}
+
+/* Chỉnh lại chữ cho nổi bật trên thân thùng */
+.bin span, .bin b, .bin div {
+    z-index: 2; /* Phải nằm trên lớp ::after */
+    color: white;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+    font-weight: bold;
+    text-transform: uppercase;
+    font-size: 1.1rem;
+}
         .header, .zone-info {
     /* Đổ bóng giúp các bảng này "nổi" lên khỏi nền */
     box-shadow: 0 8px 15px rgba(0, 0, 0, 0.05), 0 4px 0px rgba(165, 214, 167, 0.4);
@@ -313,17 +367,22 @@
 
         .zone { flex: 1; position: relative; }
         /* Bảng điểm bên BẠN */
-#player-zone { 
-    background: #E3F2FD !important; /* Xanh dương cực nhạt */
-    border: 2px solid #2196F3 !important;
-    box-shadow: 0 4px 0px rgba(33, 150, 243, 0.2);
+#player-zone {
+    flex: 1;
+    border-radius: 12px;
+    /* Màu xanh dương rõ rệt hơn */
+    background: radial-gradient(circle, #ffffff 0%, #e3f2fd 100%) !important;
+    border: 3px solid #bbdefb;
+    box-shadow: inset 0 0 50px rgba(33, 150, 243, 0.1);
 }
 
-/* Bảng điểm bên AI */
-#ai-zone { 
-    background: #e5b7eb !important; /* Tím nhạt */
-    border: 2px solid #c757db !important;
-    box-shadow: 0 4px 0px rgba(156, 39, 176, 0.2);
+#ai-zone {
+    flex: 1;
+    border-radius: 12px;
+    /* Màu tím hồng rõ rệt hơn */
+    background: radial-gradient(circle, #ffffff 0%, #fce4ec 100%) !important;
+    border: 3px solid #f8bbd0;
+    box-shadow: inset 0 0 50px rgba(233, 30, 99, 0.1);
 }
 
         .zone-info { 
@@ -427,37 +486,72 @@
     object-fit: contain;
 }
 #level-title {
-    /* 1. Nền Gradient chuyển màu từ xanh sáng sang xanh đậm để tạo độ sâu */
+    /* --- PHẦN GIỮ NGUYÊN --- */
+    /* 1. Nền Gradient giữ nguyên tông màu xanh */
     background: linear-gradient(180deg, #66BB6A 0%, #2E7D32 100%) !important;
     
-    /* 2. Màu chữ trắng tinh khôi nổi bật trên nền đậm */
+    /* 2. Màu chữ trắng */
     color: #ffffff !important;
     
     /* 3. Tăng độ bo tròn và khoảng cách để trông "mập mạp" đáng yêu */
     padding: 10px 30px !important; 
     border-radius: 50px !important;
     
-    /* 4. Font chữ mập (Itim) kết hợp hiệu ứng chữ */
+    /* 4. Font chữ Itim và hiệu ứng */
     font-family: 'Itim', cursive !important;
-    font-size: 1.1rem !important;
+    font-size: 1.5rem !important;
     text-transform: uppercase;
     letter-spacing: 1px;
     font-weight: bold;
     
-    /* 5. Hiệu ứng đổ bóng 3D để nó "lồi" hẳn lên khỏi thanh trắng */
-    box-shadow: 0 4px 0px #1B5E20, 0 6px 15px rgba(0,0,0,0.2) !important;
+    /* 5. Hiệu ứng đổ bóng 3D để nó "lồi" (Giữ lại phần bóng cứng #1B5E20) */
+    /* *SẼ ĐƯỢC CẬP NHẬT TRONG ANIMATION* */
     
-    /* 6. Viền mỏng màu trắng bên trong để tạo hiệu ứng ánh sáng (Inner Glow) */
+    /* 6. Viền mỏng màu trắng bên trong */
     border: 2px solid rgba(255, 255, 255, 0.3) !important;
     
-    /* 7. Giữ chữ luôn nằm trên 1 hàng và căn giữa hoàn hảo */
+    /* 7. Căn giữa chữ */
     display: flex;
     align-items: center;
     justify-content: center;
     white-space: nowrap;
     
-    /* Mẹo: Chỉnh nhẹ để chữ không bị lệch xuống do Flexbody */
+    /* Giữ chữ không bị lệch */
     line-height: 1;
+
+    /* --- PHẦN THÊM MỚI ĐỂ LÀM NỔI BẬT & NHẤP NHÁY --- */
+
+    /* Áp dụng Animation nhấp nháy mạnh (Pulse) */
+    /* 'extreme-pulse' là tên, '1.5s' là tốc độ, 'infinite' là liên tục */
+    animation: extreme-pulse 1.5s infinite ease-in-out;
+}
+
+/* Định nghĩa Animation Nhấp Nháy Cực Mạnh */
+@keyframes extreme-pulse {
+    0% {
+        /* Trạng thái bình thường (Giống CSS gốc của bạn) */
+        box-shadow: 0 4px 0px #1B5E20, 0 6px 15px rgba(0,0,0,0.2) !important;
+        transform: scale(1);
+    }
+    
+    50% {
+        /* Trạng thái nổi bật nhất */
+        /* 1. Tỏa sáng màu xanh cực mạnh (Neon glow) */
+        box-shadow: 0 4px 0px #1B5E20, 0 0 30px #81C784, 0 0 50px #4CAF50 !important;
+        
+        /* 2. Hơi phóng to nhẹ để gây chú ý hơn */
+        transform: scale(1.05);
+        
+        /* 3. Tùy chọn: Làm nền sáng hơn một chút */
+        filter: brightness(110%);
+    }
+    
+    100% {
+        /* Quay lại trạng thái bình thường */
+        box-shadow: 0 4px 0px #1B5E20, 0 6px 15px rgba(0,0,0,0.2) !important;
+        transform: scale(1);
+        filter: brightness(100%);
+    }
 }
 
 #quick-reset-btn {
@@ -515,7 +609,7 @@
         </div> -->
         
         <div class="difficulty-container">
-            <button class="btn-lvl" style="background: #81C784;" onclick="startCountdown('easy')">🎈AI 'Tiểu Học'</button>
+            <button class="btn-lvl" style="background: #81C784;" onclick="startCountdown('easy')">🎈AI 'TIỂU HỌC'</button>
             <button class="btn-lvl" style="background: #4FC3F7;" onclick="startCountdown('medium')">🚀AI 'THCS'</button>
             <button class="btn-lvl" style="background: #FF8A65;" onclick="startCountdown('hard')">🔥AI 'THPT'</button>
         </div>
@@ -682,10 +776,9 @@ const itemPool = [
     { e: '💡', x: 12, y: 38, t: 'inorganic' }, // Túi nilon bẩn
     { e: '🍸', x: 12, y: 38, t: 'inorganic' },
     { e: '🍾', x: 12, y: 38, t: 'inorganic' },
-    { e: '🥤', x: 12, y: 37, t: 'inorganic' },
 
     // Tái chế
-    { e: '🥤', x: 55, y: 64, t: 'recycle' }, // Ly nhựa sạch
+    { e: '🔋', x: 55, y: 64, t: 'recycle' }, // Ly nhựa sạch
     { e: '📰', x: 55, y: 65, t: 'recycle' }, // Báo cũ
     { e: '📖', x: 55, y: 65, t: 'recycle' }, 
     { e: '🥫', x: 54, y: 64, t: 'recycle' },
@@ -700,7 +793,7 @@ const vnNames = {
     const config = { 
         easy:   { total: 5, k: 1, mem: 3,  speed: 1900, think: 1500 }, 
         medium: { total: 10, k: 2, mem: 6,  speed: 1500, think: 1200  }, 
-        hard:   { total: 15, k: 3, mem: 8, speed: 1000,  think: 800   } 
+        hard:   { total: 15, k: 3, mem: 8, speed: 1000,  think: 1000   } 
     };
     
     let pScore = 0, pWrong = 0, aiScore = 0, aiWrong = 0, pCount = 0, aiCount = 0, gameActive = false, diff = 'easy';
@@ -733,22 +826,31 @@ const vnNames = {
     }
 
     function initGame() {
-        document.getElementById('play-screen').classList.remove('hidden');
-        let vnDiff = diff === 'easy' ? "ĐANG THI ĐẤU CÙNG AI 'TIỂU HỌC'" : (diff === 'medium' ? "ĐANG THI ĐẤU CÙNG AI 'THCS'" : "ĐANG THI ĐẤU CÙNG AI 'THPT'");
-        document.getElementById('level-title').innerText = vnDiff;
-        document.getElementById('items-left').innerText = config[diff].total;
-        gameActive = true;
-        spawn('player'); spawn('ai');
-        let timer = 20;
-        let clk = setInterval(() => {
-            if(!gameActive) { clearInterval(clk); return; }
-            timer--; document.getElementById('timer').innerText = timer;
-            if(timer <= 0) endGame();
-        }, 1000);
-    }
+    // 1. Reset các thông số về trạng thái ban đầu
+    pScore = 0; pWrong = 0; aiScore = 0; aiWrong = 0;
+    pCount = 0; aiCount = 0;
+    document.getElementById('p-score').innerText = 0;
+    document.getElementById('p-wrong').innerText = 0;
+    document.getElementById('ai-score').innerText = 0;
+    document.getElementById('ai-wrong').innerText = 0;
+
+    // 2. Hiện màn hình chơi
+    document.getElementById('play-screen').classList.remove('hidden');
+    
+    // 3. Cài đặt tiêu đề
+    let vnDiff = diff === 'easy' ? "ĐANG THI ĐẤU CÙNG AI 🤖 'TIỂU HỌC' " : (diff === 'medium' ? "ĐANG THI ĐẤU CÙNG AI 🤖 'THCS'" : "ĐANG THI ĐẤU CÙNG AI 🤖 'THPT'");
+    document.getElementById('level-title').innerText = vnDiff;
+    document.getElementById('items-left').innerText = config[diff].total;
+
+    // 4. QUAN TRỌNG: Đặt trạng thái chờ
+    gameActive = false; 
+
+    // 5. Gọi spawn cho người chơi (lúc này gameActive đang false nhưng side là 'player' nên sẽ hiện)
+    spawn('player'); 
+}
 
     function spawn(side) {
-        if(!gameActive) return;
+        if(!gameActive && side === 'ai') return;
         const currentCount = side === 'player' ? pCount : aiCount;
         if(currentCount >= config[diff].total) return;
         const data = {...itemPool[Math.floor(Math.random()*itemPool.length)]};
@@ -835,20 +937,27 @@ const vnNames = {
             } else { el.style.transition = "all 0.4s ease"; el.style.left = "calc(50% - 40px)"; el.style.top = "40%"; }
         };
         const start = (e) => {
-            if(!gameActive) return;
-            let x = e.type.includes('touch') ? e.touches[0].clientX : e.clientX;
-            let y = e.type.includes('touch') ? e.touches[0].clientY : e.clientY;
-            const rect = el.getBoundingClientRect();
-            const containerRect = document.getElementById('game-container').getBoundingClientRect();
-            el.ox = x - rect.left; el.oy = y - rect.top;
-            document.getElementById('game-container').appendChild(el);
-            el.style.left = (rect.left - containerRect.left) + "px"; 
-            el.style.top = (rect.top - containerRect.top) + "px";
-            el.style.transition = "none";
-            document.addEventListener('mousemove', move); document.addEventListener('mouseup', stop);
-            document.addEventListener('touchmove', move, {passive: false}); 
-            document.addEventListener('touchend', stop);
-        };
+    // 1. Nếu game chưa chạy, kích hoạt ngay lập tức
+    if (!gameActive) {
+        gameActive = true; 
+        spawn('ai'); 
+        runTimer(); // Gọi hàm chạy giờ
+    }
+
+    // 2. Logic kéo thả của bạn giữ nguyên bên dưới
+    let x = e.type.includes('touch') ? e.touches[0].clientX : e.clientX;
+    let y = e.type.includes('touch') ? e.touches[0].clientY : e.clientY;
+    const rect = el.getBoundingClientRect();
+    const containerRect = document.getElementById('game-container').getBoundingClientRect();
+    el.ox = x - rect.left; el.oy = y - rect.top;
+    document.getElementById('game-container').appendChild(el);
+    el.style.left = (rect.left - containerRect.left) + "px"; 
+    el.style.top = (rect.top - containerRect.top) + "px";
+    el.style.transition = "none";
+    document.addEventListener('mousemove', move); document.addEventListener('mouseup', stop);
+    document.addEventListener('touchmove', move, {passive: false}); 
+    document.addEventListener('touchend', stop);
+};
         el.addEventListener('mousedown', start); 
         el.addEventListener('touchstart', start, {passive: false});
     }
@@ -885,6 +994,14 @@ const vnNames = {
     function startFireworks() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; loop(); setInterval(() => explode(Math.random()*canvas.width, Math.random()*canvas.height/2), 600); }
     function explode(x,y) { const c = `hsl(${Math.random()*360},100%,50%)`; for(let i=0; i<30; i++) pts.push({x,y,vx:(Math.random()-0.5)*15,vy:(Math.random()-0.5)*15,l:1,c}); }
     function loop() { ctx.clearRect(0,0,canvas.width,canvas.height); pts.forEach((p,i) => { p.x+=p.vx; p.y+=p.vy; p.vy+=0.15; p.l-=0.02; ctx.fillStyle=p.c; ctx.globalAlpha=p.l; ctx.beginPath(); ctx.arc(p.x,p.y,3,0,Math.PI*2); ctx.fill(); if(p.l<=0) pts.splice(i,1); }); requestAnimationFrame(loop); }
+function runTimer() {
+    let t = 20;
+    let clk = setInterval(() => {
+        if(!gameActive) return clearInterval(clk);
+        t--; document.getElementById('timer').innerText = t;
+        if(t <= 0) endGame();
+    }, 1000);
+}
 </script>
 
 </body>
