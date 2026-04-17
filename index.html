@@ -719,10 +719,50 @@
     </button>
 </div>
 </div>
-
+<div id="music-control" style="position: fixed; top: 20px; left: 20px; z-index: 9999;">
+    <button onclick="toggleMusic()" id="music-btn" style="
+        background: white; border: 3px solid #4CAF50; border-radius: 50%; 
+        width: 5px; height: 5px; font-size: 24px; cursor: pointer; 
+        display: flex; align-items: center; justify-content: center;
+        box-shadow: 0 4px 0px #2E7D32; transition: all 0.1s;">
+        🔊
+    </button>
 </div>
 
+<audio id="bg-music" loop autoplay>
+    <source src="happy.mp3" type="audio/mpeg">
+</audio>
+
 <script>
+    const bgMusic = document.getElementById('bg-music');
+    const musicBtn = document.getElementById('music-btn');
+
+    // Mặc định ép nhạc phát ngay khi có tương tác đầu tiên với trang
+    function forceStartMusic() {
+        bgMusic.play().then(() => {
+            musicBtn.innerText = "🔊";
+            // Thành công thì gỡ bỏ sự kiện để tránh lặp lại
+            document.removeEventListener('click', forceStartMusic);
+            document.removeEventListener('touchstart', forceStartMusic);
+        }).catch(e => {
+            // Nếu vẫn bị chặn, icon sẽ hiển thị loa tắt để user tự bật
+            musicBtn.innerText = "🔈";
+        });
+    }
+
+    // Lắng nghe click hoặc chạm để kích hoạt "mặc định"
+    document.addEventListener('click', forceStartMusic);
+    document.addEventListener('touchstart', forceStartMusic);
+
+    function toggleMusic() {
+        if (bgMusic.paused) {
+            bgMusic.play();
+            musicBtn.innerText = "🔊";
+        } else {
+            bgMusic.pause();
+            musicBtn.innerText = "🔈";
+        }
+    }
 
     function resetGame() {
     // 1. Dừng mọi trạng thái game đang chạy
